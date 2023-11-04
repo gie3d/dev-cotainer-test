@@ -1,0 +1,41 @@
+version: '3'
+services:
+  backend1:
+    build:
+      context: go_container
+      dockerfile: Dockerfile
+    container_name: go_container1
+    environment:
+      - PORT=9000
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    secrets:
+      - db-password
+  db:
+    image: mariadb:11.1.2
+    container_name: sms_mariadb
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=sms_test
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent']
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    expose:
+      - 3306
+    ports:
+      - "3307:3306"
+
+volumes:
+  db-data:
+
+secrets:
+  db-password:
+    file: db/password.txt

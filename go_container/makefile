@@ -15,7 +15,7 @@ build:
 	docker build . -t "${IMAGE}:${TAG}"
 
 run: build
-	docker run -e PORT=9000 -p 9000:9000 "${IMAGE}:${TAG}"
+	docker run --name=go_container1 -e PORT=9000 -p 9000:9000 "${IMAGE}:${TAG}"
 
 publish: build
 	docker push "${IMAGE}:${TAG}"
